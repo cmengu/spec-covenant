@@ -1,0 +1,90 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SpecSchema",
+  "description": "Canonical spec contract for agent orchestration. Every downstream component validates against this.",
+  "type": "object",
+  "required": [
+    "goal",
+    "success_criteria",
+    "constraints",
+    "preconditions",
+    "postconditions",
+    "test_cases",
+    "non_goals",
+    "protected",
+    "signal_budget"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "goal": {
+      "type": "string",
+      "description": "One sentence. Subject + verb + object. No conjunctions. Rejected by validator if over 20 words.",
+      "minLength": 1
+    },
+    "success_criteria": {
+      "type": "array",
+      "description": "Measurable outcomes. Each item must contain a number, threshold, or observable state. Ban list (not enforced here): good, appropriate, reasonable, correct, proper.",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "constraints": {
+      "type": "array",
+      "description": "Hard limits on behaviour. Only include constraints you can write a test case for.",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "preconditions": {
+      "type": "array",
+      "description": "What must be true before execution begins. Checked at runtime — pipeline halts with a clear message if any precondition is unmet.",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "postconditions": {
+      "type": "array",
+      "description": "What must be true after execution, independent of path taken. System states, not business outcomes.",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "test_cases": {
+      "type": "array",
+      "description": "Input/output pairs. Minimum: 1 passing case + 1 failing case. Failing case is mandatory — proves the spec is testable.",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "required": ["input", "expected_output", "type"],
+        "additionalProperties": false,
+        "properties": {
+          "input": {
+            "type": "string",
+            "description": "The input fed to the component under test."
+          },
+          "expected_output": {
+            "type": "string",
+            "description": "The exact output or observable state expected."
+          },
+          "type": {
+            "type": "string",
+            "enum": ["passing", "failing"],
+            "description": "passing = this input should succeed. failing = this input must be rejected."
+          }
+        }
+      }
+    },
+    "non_goals": {
+      "type": "array",
+      "description": "Explicit list of what this spec does NOT cover. Every boundary must be stated positively — AI cannot infer from omission.",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "protected": {
+      "type": "array",
+      "description": "Existing things that must not be touched. DB schema, API signatures, auth flows.",
+      "items": { "type": "string" }
+    },
+    "signal_budget": {
+      "type": "integer",
+      "description": "Maximum number of words the entire spec may contain. Unenforced in this version — field exists so the interviewer can populate it. Enforcement added in a later step.",
+      "minimum": 1
+    }
+  }
+}
