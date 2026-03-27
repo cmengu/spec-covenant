@@ -1,0 +1,23 @@
+# Intentionally invalid: goal is 21 words, exceeds the 20-word limit.
+# Expected error: "goal exceeds 20-word limit: 21 words found."
+goal: "The spec validator component rejects any YAML spec file that violates the JSON schema definition using strict Python-based programmatic validation rules."
+
+success_criteria:
+  - "100% of invalid goals are rejected."
+constraints:
+  - "Word count is checked on every load."
+preconditions:
+  - "schema/spec_schema.json exists."
+postconditions:
+  - "ValueError is raised with word count in message."
+test_cases:
+  - input: "spec with 21-word goal"
+    expected_output: "ValueError: goal exceeds 20-word limit"
+    type: "failing"
+  - input: "spec with 10-word goal"
+    expected_output: "Returns parsed dict."
+    type: "passing"
+non_goals:
+  - "Does not check grammar."
+protected: []
+signal_budget: 100

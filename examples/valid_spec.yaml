@@ -1,0 +1,44 @@
+goal: "The spec validator rejects any YAML file that violates the schema."
+
+success_criteria:
+  - "100% of structurally invalid specs raise a ValueError with a field-specific message."
+  - "0 valid specs are rejected by the validator."
+  - "Goals exceeding 20 words are rejected with a word count in the error message."
+
+constraints:
+  - "yaml.safe_load is used — yaml.load is never called."
+  - "Validation completes in under 500ms for any spec under 1000 words."
+
+preconditions:
+  - "schema/spec_schema.json exists and is valid JSON."
+  - "The input file exists at the provided path."
+  - "pyyaml and jsonschema>=4.0 are installed."
+
+postconditions:
+  - "On success: the parsed spec dict is returned with all 9 fields populated."
+  - "On failure: a ValueError is raised with a message naming the violated rule."
+  - "No file is written or modified during validation."
+
+test_cases:
+  - input: "valid_spec.yaml"
+    expected_output: "Returns parsed dict with all 9 fields."
+    type: "passing"
+  - input: "A YAML file missing the goal field."
+    expected_output: "ValueError: Schema validation failed: 'goal' is a required property"
+    type: "failing"
+  - input: "A spec with a 21-word goal."
+    expected_output: "ValueError: goal exceeds 20-word limit: 21 words found."
+    type: "failing"
+  - input: "A spec with 2 passing test cases and 0 failing test cases."
+    expected_output: "ValueError: test_cases must include at least 1 case with type: failing"
+    type: "failing"
+
+non_goals:
+  - "The validator does not check the ban list — that is enforced by the interviewer prompt."
+  - "The validator does not enforce signal_budget word count — added in a later step."
+  - "The validator does not write or transform specs — read-only."
+
+protected:
+  - "The field names in spec_schema.json must not be renamed without migrating all existing spec files."
+
+signal_budget: 300

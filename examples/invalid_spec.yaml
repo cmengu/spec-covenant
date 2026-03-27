@@ -1,0 +1,21 @@
+# Intentionally invalid: missing required field 'goal'.
+# Expected error: "Schema validation failed: 'goal' is a required property"
+success_criteria:
+  - "Some measurable outcome with a number: 100%."
+constraints:
+  - "Some hard constraint."
+preconditions:
+  - "Some precondition."
+postconditions:
+  - "Some postcondition."
+test_cases:
+  - input: "x"
+    expected_output: "y"
+    type: "passing"
+  - input: "a"
+    expected_output: "b"
+    type: "failing"
+non_goals:
+  - "Not doing anything extra."
+protected: []
+signal_budget: 100
