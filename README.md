@@ -1,10 +1,20 @@
-# covenant
+<h1 align="center">covenant</h1>
 
-A spec schema and validator for agent orchestration. Defines the canonical contract that every downstream component — interviewer, parser, pipeline — enforces.
+<p align="center">A spec schema and validator for agent orchestration, checking YAML specs against one canonical contract.</p>
 
-## Overview
+<p align="center">
+<picture>
+<source media="(prefers-color-scheme: dark)" srcset="docs/how-it-works-dark.svg">
+<img src="docs/how-it-works-light.svg" alt="A spec.yaml file passes four checks in order: safe_load, JSON Schema, goal of 20 words or fewer, and at least one passing and one failing test case. A failed check raises ValueError and stops." width="800">
+</picture>
+</p>
+<p align="center">The order of checks in <code>validator.py</code>. Drawn from the code, not a recording.</p>
 
-Specs are YAML files. The schema (`schema/spec_schema.json`) is the source of truth. `validator.py` is a thin enforcement layer: structural rules live in JSON Schema; business rules that JSON Schema cannot express (word count, type coverage) live in Python.
+## Why
+
+Agent specs written as free text are hard to check. covenant fixes the shape of a spec: nine required fields, a short goal, and at least one passing and one failing test case. Anything else is rejected with a message naming the rule.
+
+The schema (`schema/spec_schema.json`) is the source of truth. Rules JSON Schema cannot express (word count, test case types) live in `validator.py`.
 
 ## Requirements
 
@@ -36,7 +46,7 @@ python3 validator.py <path_to_spec.yaml>
 
 ## Spec Format
 
-Every spec must be a YAML file with these 9 fields:
+Every spec must be a YAML file with these 9 fields. The validator enforces the structure (required fields, types, item counts), the goal word limit and the passing/failing test case rule. The other wording rules in the Rule column, such as "measurable" and "testable", are conventions the validator does not check.
 
 | Field | Type | Rule |
 |-------|------|------|
@@ -84,7 +94,7 @@ covenant/
 
 ## Environment
 
-Copy `.env.example` to `.env` and set your Anthropic API key:
+`validator.py` does not call the Anthropic API or read `.env`. `requirements.txt` lists `anthropic` and `.env.example` holds an `ANTHROPIC_API_KEY` placeholder for components outside this repo. If you use them, copy the file and set your own key:
 
 ```bash
 cp .env.example .env
